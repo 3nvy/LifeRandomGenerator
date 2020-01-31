@@ -3,9 +3,11 @@ import { Ionicons } from '@expo/vector-icons'; // 6.2.2
 import { createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import ListStack from './Stacks/List';
+import PickerStack from './Stacks/Picker';
 
 const TabNavigator = createBottomTabNavigator({
-    List: ListStack,
+    Picker: PickerStack,
+    List: ListStack
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -13,11 +15,9 @@ const TabNavigator = createBottomTabNavigator({
             const { routeName } = navigation.state;
             let IconComponent = Ionicons;
             let iconName;
-            if (routeName === 'List') {
-              iconName = focused
-                ? 'ios-list'
-                : 'ios-list';
-            }
+
+            (routeName === 'List') && ( iconName = 'ios-list');
+            (routeName === 'Picker') && ( iconName = 'ios-navigate');
             
             return <IconComponent name={iconName} size={25} color={tintColor} />;
           },
