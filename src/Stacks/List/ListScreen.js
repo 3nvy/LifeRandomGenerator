@@ -8,23 +8,23 @@ const ListScreen = ({ navigation }) => {
 
     const [{ list }, dispatch] = useStore();
 
-    useEffect(() => {
-        (async() => {
-            // await AsyncStorage.removeItem('items-list');
-            let [err, list] = await to(AsyncStorage.getItem('items-list'));
+    // useEffect(() => {
+    //     (async() => {
+    //         // await AsyncStorage.removeItem('items-list');
+    //         let [err, list] = await to(AsyncStorage.getItem('items-list'));
 
-            if(list == null) await to(AsyncStorage.setItem('items-list', JSON.stringify([])));
-            try {
-                dispatch({
-                    type: 'setList',
-                    data: JSON.parse(list || '[]')
-                })
-            }
-            catch(err){
-                alert('Error getting data');
-            }
-        })()
-    }, [])
+    //         if(list == null) await to(AsyncStorage.setItem('items-list', JSON.stringify([])));
+    //         try {
+    //             dispatch({
+    //                 type: 'setList',
+    //                 data: JSON.parse(list || '[]')
+    //             })
+    //         }
+    //         catch(err){
+    //             alert('Error getting data');
+    //         }
+    //     })()
+    // }, [])
 
     return (
         <List 
