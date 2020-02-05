@@ -2,7 +2,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
+    "android": "expo start --localhost --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject"
@@ -22,6 +22,7 @@
     "react-native-screens": "2.0.0-alpha.12",
     "react-native-web": "~0.11.7",
     "react-navigation": "^4.0.10",
+    "react-navigation-drawer": "^2.3.3",
     "react-navigation-stack": "^2.0.16",
     "react-navigation-tabs": "^2.7.0",
     "reactotron-react-native": "^4.0.3"

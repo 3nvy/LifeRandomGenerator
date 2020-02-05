@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../../Store';
 import { Button } from 'react-native-elements';
 
-import { ScrollView , Text, TouchableHighlight } from 'react-native';
+import { ScrollView } from 'react-native';
 import { ListItem } from 'react-native-elements';
 
 const PickerScreen = ({ navigation }) => {
 
     const [{ list }, dispatch] = useStore();
     const [story, setStory] = useState([]);
+
+    // Reset story when list changes
+    useEffect(() => setStory([]), [list])
 
     const randomPicker = () => {
         const mainGroups = list.filter(i => !i.parentId)

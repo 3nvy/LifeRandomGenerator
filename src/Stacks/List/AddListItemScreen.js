@@ -1,20 +1,48 @@
 import to from 'await-to-js';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AsyncStorage, ScrollView, View } from 'react-native';
-import { Input, Button  } from 'react-native-elements';
+import { Input, Button, Overlay, Text } from 'react-native-elements';
+import Prompt from './Components/Prompt';
 import { useStore } from '../../../Store';
-import { inspectAsyncStore } from '../../../Inspector';
+import { addItemToList } from './Context';
 
-const WrappeInput = ({ label, placeholder, value, setFn, multiline = false }) => (
+const capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1); 
+
+const validateField = ({ field, value }) => {
+    const valueLength = value.length;
+
+    if(valueLength > 0 && valueLength < 3) return { [`${field}Error`]: `${capitalizeFirstLetter(field)} needs to be at least least 3 characters long.` }
+    
+    return { [`${field}Error`]: '' }
+}
+
+const WrappeInput = ({ label, placeholder, pkey, value, setFn, multiline = false, errorMsg, setErrorsFn }) => (
     <View style={{marginTop: 10, marginBottom: 20}}>
         <Input
             inputStyle={{textAlignVertical: multiline ? 'top' : 'center'}}
             label={label}
             placeholder={placeholder}
             value={value}
+            errorStyle={{ color: 'red' }}
+            errorMessage={errorMsg}
             multiline={multiline}
             numberOfLines={multiline ? 10 : 1}
-            onChange={evt => setFn(evt.nativeEvent.text)}
+            onChange={({nativeEvent: { text }}) => {
+
+                // Error Handling
+                setErrorsFn && setErrorsFn(state => ({
+                    ...state,
+                    ...validateField({ field: pkey, value: text })
+                }));
+
+                // Set new state
+                setFn(state => {
+                    return {
+                        ...state,
+                        [pkey]: text
+                    }
+                })
+            }}
         />
     </View>
 )
@@ -22,40 +50,49 @@ const WrappeInput = ({ label, placeholder, value, setFn, multiline = false }) =>
 const AddListItemScreen = ({ navigation }) => {
 
     const [{ list }, dispatch] = useStore();
-    const { parentId } = navigation.state.params;
+    const { parentId, showPrompt = false } = navigation.state.params;
 
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
+    const [{ name, description }, setForm] = useState({ name: '', description: '' });
     const [submiting, setSubmiting] = useState(false);
+    const [{ nameError }, setErrors] = useState({ nameError: '' });
+    const [isFormValid, setFormValid] = useState(false);
 
     const submitItem = async() => {
         setSubmiting(true);
-
-        const id = list.reduce((acc, i) => (+i.id > acc) ? i.id : acc, 0) + 1
-        const newList = [...list, {
-            id,
-            parentId,
-            name,
-            description
-        }] 
-
-        await to(AsyncStorage.setItem('items-list', JSON.stringify(newList)));
-        inspectAsyncStore();
-        dispatch({
-            type: 'setList',
-            data: newList
-        })
-
+        navigation.setParams({ canNavigateAway: true });
+        await addItemToList(list, dispatch, { parentId, name, description });
         navigation.goBack();
     }
 
+    const acceptPrompt = () => {
+        navigation.setParams({ canNavigateAway: true, showPrompt: false }),
+        setTimeout(() => navigation.goBack(), 1);
+    } 
+
+    const cancelPrompt = () => {
+        navigation.setParams({ showPrompt: false });
+    } 
+
+    useEffect(() => {
+        setFormValid(!nameError && name.length > 0);
+    }, [name, nameError])
+
     return (
-        <ScrollView style={{margin: 10}}>
-            <WrappeInput label="Name" placeholder="Input Name" value={name} setFn={setName} />
+        <ScrollView style={{ margin: 10 }}>
 
-            <WrappeInput label="Description" placeholder="Set some description ..." value={description} setFn={setDescription} multiline={true} />
+            <Prompt 
+                isVisible={showPrompt}
+                acceptPromptFn={acceptPrompt}
+                cancelPromptFn={cancelPrompt}
+                title='Warning!'
+                text='Are you sure you want to navigate away? All changes will be lost if you do.'
+            />
 
-            <Button title="Submit Item" buttonStyle={{height: 50}} onPress={submitItem} loading={submiting} disabled={submiting}/>
+            <WrappeInput label="Name *" placeholder="Input Name" pkey='name' value={name} setFn={setForm} errorMsg={nameError} setErrorsFn={setErrors} />
+
+            <WrappeInput label="Description" placeholder="Set some description ..." pkey='description' value={description} setFn={setForm} multiline={true} />
+
+            <Button title="Submit Item" buttonStyle={{height: 50}} onPress={submitItem} loading={submiting} disabled={!isFormValid || submiting}/>
 
         </ScrollView>
     )

@@ -23,17 +23,18 @@ const TabNavigator = createBottomTabNavigator({
             (routeName === 'Picker') && ( iconName = 'ios-navigate');
             
             return <IconComponent name={iconName} size={25} color={tintColor} />;
-          },
+          }
     }),
     tabBarOptions: {
       activeTintColor: '#C70039',
       inactiveTintColor: 'gray',
     },
-  });
+  }
+);
 
-  const AppContainer = createAppContainer(TabNavigator);
+const AppContainer = createAppContainer(TabNavigator);
 
-  const App = () => {
+const App = () => {
 
     const [store, dispatch] = useStore();
     const [isLoading, setLoading] = useState(true);
@@ -53,6 +54,6 @@ const TabNavigator = createBottomTabNavigator({
     return (
       <AppContainer />
     );
-  }
+}
   
-  export default App;
+export default App;

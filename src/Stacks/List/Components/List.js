@@ -3,7 +3,7 @@ import { ScrollView , Text, TouchableHighlight } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useStore } from '../../../../Store';
 
-const List = ({ navigation, filterFn, style = {}, parentId }) => {
+const List = ({ navigation, filterFn, style = {}, parentId, needsChildren = false }) => {
 
     const [{ list }, dispatch] = useStore();
 
@@ -14,6 +14,7 @@ const List = ({ navigation, filterFn, style = {}, parentId }) => {
                     <ListItem
                         key={i}
                         title={l.name}
+                        {...(needsChildren && !list.find(item => item.parentId === l.id) ? {subtitle: 'Needs 1 more children to be enabled'} : {})}
                         bottomDivider chevron
                         onPress={()=> navigation.push('ItemDetails', { data: l }) }
                     />
