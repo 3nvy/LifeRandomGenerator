@@ -1,7 +1,6 @@
-import to from 'await-to-js';
 import React, { useEffect, useState } from 'react';
-import { AsyncStorage, ScrollView } from 'react-native';
-import { Icon , Card, Text } from 'react-native-elements';
+import { ScrollView, Picker } from 'react-native';
+import { Icon , Card, Text, CheckBox } from 'react-native-elements';
 import List from './Components/List';
 import Prompt from './Components/Prompt';
 import { useStore } from '../../../Store';
@@ -10,15 +9,31 @@ const ItemDetailsScreen = ({ navigation }) => {
 
     const [{ list }, dispatch] = useStore();
     const [showPrompt, setPrompt] = useState(false);
-    const { data: { id, description } } = navigation.state.params;
+    const { data: { id, description, isSplitPick, order } } = navigation.state.params;
 
-    const onItemDelete = async() => {
+    const onItemDelete = () => {
         dispatch({
             type: 'list@removeItem',
             data: id
         })
         setPrompt(false);
         navigation.navigate('List');
+    }
+
+    const onSplitPickChange = () => {
+        dispatch({
+            type: 'list@updateItem',
+            data: { id, isSplitPick: !isSplitPick }
+        })
+        navigation.setParams({ data: {...navigation.state.params.data, isSplitPick: !isSplitPick} })
+    }
+
+    const onChangeItemOrder = newOrder => {
+        dispatch({
+            type: 'list@changeItemOrder',
+            data: { id, currentOrder: order, newOrder }
+        })
+        navigation.setParams({ data: {...navigation.state.params.data, order: newOrder} })
     }
 
     const cancelPrompt = () => setPrompt(false);
@@ -40,12 +55,33 @@ const ItemDetailsScreen = ({ navigation }) => {
 
             <Card 
                 title='Details'
-                containerStyle={{margin: 0, marginBottom: 10}}
+                containerStyle={{margin: 0, marginBottom: 0}}
             >
                 <Text style={{marginBottom: 10}}>
                     {description || 'No Description Provided'}
                 </Text>
             </Card>
+            
+            <Card 
+                title={ <CheckBox title='Use Split Pick' checked={isSplitPick} containerStyle={{backgroundColor: 'transparent', borderColor: 'transparent'}} onPress={onSplitPickChange} />}
+                containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}
+            >
+            </Card>
+
+            <Card 
+                title={ 
+                    <Picker
+                        selectedValue={order}
+                        style={{height: 50, width: 100}}
+                        onValueChange={onChangeItemOrder}
+                    >
+                        { [...Array(list.filter(i => !i.parentId).length)].map((value, i) => <Picker.Item key={i} label={`${i+1}`} value={i+1} />) }
+                    </Picker>
+                }
+                containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}
+            >
+            </Card>
+    
 
             <Card 
                 title='Sub Items'

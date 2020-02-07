@@ -1,10 +1,8 @@
-import to from 'await-to-js';
 import React, { useState, useEffect } from 'react';
-import { AsyncStorage, ScrollView, View } from 'react-native';
-import { Input, Button, Overlay, Text } from 'react-native-elements';
+import { ScrollView, View } from 'react-native';
+import { Input, Button } from 'react-native-elements';
 import Prompt from './Components/Prompt';
 import { useStore } from '../../../Store';
-import { addItemToList } from './Context';
 
 const capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1); 
 
@@ -60,10 +58,9 @@ const AddListItemScreen = ({ navigation }) => {
     const submitItem = async() => {
         setSubmiting(true);
         navigation.setParams({ canNavigateAway: true });
-        // await addItemToList(list, dispatch, { parentId, name, description });
         dispatch({
             type: 'list@addItem',
-            data: { parentId, name, description }
+            data: { parentId, name, description, enabled: true }
         })
         navigation.goBack();
     }
