@@ -5,7 +5,6 @@ import { Icon , Card, Text } from 'react-native-elements';
 import List from './Components/List';
 import Prompt from './Components/Prompt';
 import { useStore } from '../../../Store';
-import { deleteItemFromList } from './Context';
 
 const ItemDetailsScreen = ({ navigation }) => {
 
@@ -14,7 +13,10 @@ const ItemDetailsScreen = ({ navigation }) => {
     const { data: { id, description } } = navigation.state.params;
 
     const onItemDelete = async() => {
-        await deleteItemFromList(list, dispatch, id);
+        dispatch({
+            type: 'list@removeItem',
+            data: id
+        })
         setPrompt(false);
         navigation.navigate('List');
     }

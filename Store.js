@@ -1,30 +1,48 @@
-import React, { createContext, useContext, useReducer } from 'react';
-import PropTypes from 'prop-types';
+import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
+import { ScrollView, Text } from 'react-native';
+import { ListReducer, ListLoader } from './src/Stacks/List/Context';
 
-export const StateContext = createContext();
-export const useStore = () => useContext(StateContext);
+// Create global context
+const StateContext = createContext();
+const useStore = () => useContext(StateContext);
 
-export const StateProvider = ({ reducer, initialState, children }) => (
-  <StateContext.Provider value={useReducer(reducer, initialState)}>
+// Spreading reducers for each individual context
+const globalReducer = (state, action) => ({
+  ...ListReducer(state, action)
+});
+
+// State loader to fetch initial state of each context from the localstorage
+const StateLoader = ({ children }) => {
+  const [globalInitialState, setGlobalState] = useState();
+
+  // Load data from localstorage
+  useEffect(() => {
+    Promise.all([ListLoader()])
+     .then((list) => {
+        setGlobalState({ list: list[0] });
+     })
+  }, [])
+
+  // Loading screen while store is empty
+  if(!globalInitialState)
+    return (
+      <ScrollView>
+        <Text>Loadig Data</Text>
+      </ScrollView>
+    )
+
+  return <StateProvider globalInitialState={globalInitialState} children={children}/>
+}
+
+// State provider to wrap on the App
+const StateProvider = ({ children, globalInitialState }) => (
+  <StateContext.Provider value={useReducer(globalReducer, globalInitialState)}>
     {children}
   </StateContext.Provider>
 );
 
-StateProvider.propTypes = {
-  /**
-   * @return {React.Node}
-   */
-  children: PropTypes.node.isRequired,
-
-  /**
-   * Object containing initial state value.
-   */
-  initialState: PropTypes.shape({}).isRequired,
-
-  /**
-   *
-   * @param {object} state
-   * @param {object} action
-   */
-  reducer: PropTypes.func.isRequired
-};
+export {
+  StateContext, 
+  StateLoader,
+  useStore
+}

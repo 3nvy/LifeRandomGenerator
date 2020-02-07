@@ -26,7 +26,7 @@ const WrappeInput = ({ label, placeholder, pkey, value, setFn, multiline = false
             errorStyle={{ color: 'red' }}
             errorMessage={errorMsg}
             multiline={multiline}
-            numberOfLines={multiline ? 10 : 1}
+            numberOfLines={multiline ? 8 : 1}
             onChange={({nativeEvent: { text }}) => {
 
                 // Error Handling
@@ -60,7 +60,11 @@ const AddListItemScreen = ({ navigation }) => {
     const submitItem = async() => {
         setSubmiting(true);
         navigation.setParams({ canNavigateAway: true });
-        await addItemToList(list, dispatch, { parentId, name, description });
+        // await addItemToList(list, dispatch, { parentId, name, description });
+        dispatch({
+            type: 'list@addItem',
+            data: { parentId, name, description }
+        })
         navigation.goBack();
     }
 

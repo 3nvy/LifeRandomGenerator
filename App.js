@@ -1,22 +1,13 @@
 import React, { useEffect } from 'react';
 import TabNavigation from './src/TabNavigation';
-import Reactotron, { asyncStorage } from 'reactotron-react-native';
-import { StateProvider } from './Store';
-import { ListInitialstate, ListReducer } from './src/Stacks/List/Context';
+import Reactotron from 'reactotron-react-native';
+
+import { StateLoader } from './Store';
 
 Reactotron
 .configure({ host: '192.168.1.125' })
-.use(asyncStorage())
 .useReactNative() 
 .connect()
-
-const initialState = {
-  ...ListInitialstate
-};
-
-const mainReducer = (state, action) => ({
-  ...ListReducer(state, action)
-});
 
 const App = () => {
 
@@ -25,9 +16,9 @@ const App = () => {
   }, [])
 
   return (
-    <StateProvider initialState={initialState} reducer={mainReducer}>
+    <StateLoader>
       <TabNavigation />
-    </StateProvider>
+    </StateLoader>
   )
 }
     
