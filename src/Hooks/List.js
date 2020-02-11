@@ -70,9 +70,6 @@ const changeItemOrderFromList = (list, { id, currentOrder, newOrder }) => {
 }
 
 const reducer = (state, action) => {
-    
-    console.log(action);
-    
     switch (action.type) {
         case 'initialLoad':
         return action.data;
