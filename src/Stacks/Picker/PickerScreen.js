@@ -32,8 +32,6 @@ const DividerPicker = ({ selection }) => {
     )
 }
 
-const getSingleSelection = list => list[0].name;
-
 const getSplitSelection = list => {
     const splitIndex = Math.ceil(list.length / 2);
     return [list.slice(0,splitIndex), list.slice(splitIndex)];
@@ -47,19 +45,31 @@ const PickerScreen = ({ navigation }) => {
     // Reset story when list changes
     useEffect(() => setStory([]), [list])
 
+    const getShuffledList = groupId => list.filter(i => i.parentId === groupId && i.enabled).sort(() => .5 - Math.random());
+
+    const getNextRandomPick = group => {
+        if(group.isSplitPick) return [{ ...group, options: getShuffledList(group.id) }];
+
+        const childrenItem = getShuffledList(group.id);
+        if(!childrenItem.length) return [];
+
+        const child = childrenItem[0];
+        return [child, getNextRandomPick(child)];
+    }
+
     const randomPicker = () => {
         const mainGroups = list.filter(i => !i.parentId && i.enabled).sort((a, b) => a.order - b.order)
-        
-        const groups = mainGroups.reduce((acc, g) => {
-            const shuffledList = list.filter(i => i.parentId === g.id && i.enabled).sort(() => .5 - Math.random());
-            const isSplitPick = g.isSplitPick;
-            const obj = {
-                name: g.name,
-                splitPick: isSplitPick,
-                selection: isSplitPick ? getSplitSelection(shuffledList) : getSingleSelection(shuffledList)
-            }
 
-            acc.push(obj);
+        const groups = mainGroups.reduce((acc, group) => {
+            const children = getNextRandomPick(group).flat(Infinity);
+            const selection = children[children.length-1];
+
+            children.length && acc.push({
+                name: group.name,
+                path: children.map(c => c.name).join(' / '),
+                splitPick: selection.isSplitPick,
+                ...(selection.isSplitPick && { options: getSplitSelection(selection.options) })
+            });
 
             return acc
         }, [])
@@ -82,8 +92,8 @@ const PickerScreen = ({ navigation }) => {
                     if(l.splitPick)
                         return (
                             <View key={i}>
-                                <ListItem title={l.name} bottomDivider />
-                                <DividerPicker selection={l.selection} />
+                                <ListItem title={l.name} subtitle={l.path} bottomDivider />
+                                <DividerPicker selection={l.options} />
                             </View>
                         )
 
@@ -91,7 +101,7 @@ const PickerScreen = ({ navigation }) => {
                         <ListItem
                             key={i}
                             title={l.name}
-                            subtitle={l.selection}
+                            subtitle={l.path}
                             bottomDivider
                         />
                     )

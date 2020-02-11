@@ -4,6 +4,7 @@ import Reactotron from 'reactotron-react-native';
 import { StyleSheet, ActivityIndicator, View } from 'react-native';
 
 import { ListProvider, useListContext } from './src/Hooks/List';
+import { ProfilesProvider, useProfilesContext } from './src/Hooks/Profiles';
 
 Reactotron
 .configure({ host: '192.168.1.125' })
@@ -23,9 +24,10 @@ const styles = StyleSheet.create({
 });
 
 const Loader = () => {
+  const { profiles } = useProfilesContext();
   const { list } = useListContext();
 
-  if(!list)
+  if(!list && !profiles)
   return (
     <View style={[styles.container, styles.horizontal]}>
       <ActivityIndicator size={100} color="#C70039" />
@@ -44,9 +46,11 @@ const App = () => {
   }, [])
 
   return (
+    <ProfilesProvider>
     <ListProvider>
       <Loader />
     </ListProvider>
+    </ProfilesProvider>
   )
 }
     
