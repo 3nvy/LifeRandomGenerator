@@ -3,17 +3,17 @@ import { ScrollView, Picker } from 'react-native';
 import { Icon , Card, Text, CheckBox } from 'react-native-elements';
 import List from './Components/List';
 import Prompt from './Components/Prompt';
-import { useStore } from '../../../Store';
+import { useListContext } from '../../Hooks/List';
 
 const ItemDetailsScreen = ({ navigation }) => {
 
-    const [{ list }, dispatch] = useStore();
+    const { list, dispatchList } = useListContext();
     const [showPrompt, setPrompt] = useState(false);
     const { data: { id, description, isSplitPick, order } } = navigation.state.params;
 
     const onItemDelete = () => {
-        dispatch({
-            type: 'list@removeItem',
+        dispatchList({
+            type: 'remove',
             data: id
         })
         setPrompt(false);
@@ -21,16 +21,16 @@ const ItemDetailsScreen = ({ navigation }) => {
     }
 
     const onSplitPickChange = () => {
-        dispatch({
-            type: 'list@updateItem',
+        dispatchList({
+            type: 'update',
             data: { id, isSplitPick: !isSplitPick }
         })
         navigation.setParams({ data: {...navigation.state.params.data, isSplitPick: !isSplitPick} })
     }
 
     const onChangeItemOrder = newOrder => {
-        dispatch({
-            type: 'list@changeItemOrder',
+        dispatchList({
+            type: 'changeOrder',
             data: { id, currentOrder: order, newOrder }
         })
         navigation.setParams({ data: {...navigation.state.params.data, order: newOrder} })
@@ -113,10 +113,6 @@ ItemDetailsScreen.navigationOptions = ({ navigation }) => {
             />
         )
       }
-
-    return {
-      title: name
-    }
 };
 
         

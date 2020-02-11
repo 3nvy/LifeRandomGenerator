@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useStore } from '../../../Store';
 import { Button } from 'react-native-elements';
-
 import { ScrollView, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { Card } from 'react-native-elements';
+
+import { useListContext } from '../../Hooks/List';
 
 const DividerPicker = ({ selection }) => {
 
@@ -41,7 +41,7 @@ const getSplitSelection = list => {
 
 const PickerScreen = ({ navigation }) => {
 
-    const [{ list }, dispatch] = useStore();
+    const { list } = useListContext();
     const [story, setStory] = useState([]);
 
     // Reset story when list changes

@@ -1,16 +1,16 @@
 import React from 'react';
 import { ScrollView , Text, TouchableHighlight } from 'react-native';
 import { ListItem, CheckBox } from 'react-native-elements';
-import { useStore } from '../../../../Store';
+import { useListContext } from '../../../Hooks/List';
 
 const List = ({ navigation, filterFn, style = {}, parentId, needsChildren = false }) => {
 
-    const [{ list }, dispatch] = useStore();
+    const {list, dispatchList} = useListContext();
 
     const changeItemEnableStatus = item => {
         const enableStatus = !item.enabled;
-        dispatch({
-            type: 'list@updateItem',
+        dispatchList({
+            type: 'update',
             data: { id: item.id, enabled: enableStatus }
         })
     }

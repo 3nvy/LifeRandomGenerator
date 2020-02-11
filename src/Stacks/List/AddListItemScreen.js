@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Prompt from './Components/Prompt';
-import { useStore } from '../../../Store';
+import { useListContext } from '../../Hooks/List';
 
 const capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1); 
 
@@ -47,7 +47,7 @@ const WrappeInput = ({ label, placeholder, pkey, value, setFn, multiline = false
 
 const AddListItemScreen = ({ navigation }) => {
 
-    const [{ list }, dispatch] = useStore();
+    const { dispatchList } = useListContext();
     const { parentId, showPrompt = false } = navigation.state.params;
 
     const [{ name, description }, setForm] = useState({ name: '', description: '' });
@@ -58,8 +58,8 @@ const AddListItemScreen = ({ navigation }) => {
     const submitItem = async() => {
         setSubmiting(true);
         navigation.setParams({ canNavigateAway: true });
-        dispatch({
-            type: 'list@addItem',
+        dispatchList({
+            type: 'add',
             data: { parentId, name, description, enabled: true }
         })
         navigation.goBack();
