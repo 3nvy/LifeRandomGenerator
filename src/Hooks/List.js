@@ -69,13 +69,18 @@ const changeItemOrderFromList = (list, { id, currentOrder, newOrder }) => {
     return newList;
 }
 
+const setImportedData = list => {
+    AsyncStorage.setItem('items-list', JSON.stringify(list))
+    return list;
+}
+
 const reducer = (state, action) => {
     switch (action.type) {
         case 'initialLoad':
         return action.data;
 
         case 'resetData':
-        return action.data.list;
+        return setImportedData(action.data.list);
         
         case 'add':
         return addItemToList(state, action.data);

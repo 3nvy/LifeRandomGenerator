@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Picker } from 'react-native';
-import { Icon , Card, Text, CheckBox } from 'react-native-elements';
+import { ScrollView, View, Picker } from 'react-native';
+import { Icon , Card, Text, CheckBox, Divider } from 'react-native-elements';
 import List from './Components/List';
+import GroupsList from './Components/GroupsList';
 import Prompt from './Components/Prompt';
 import { useListContext } from '../../Hooks/List';
 
@@ -45,6 +46,7 @@ const ItemDetailsScreen = ({ navigation }) => {
     return (
         <ScrollView style={{margin: 10}}>
 
+            {/* Delete Prompt */}
             <Prompt 
                 isVisible={showPrompt}
                 acceptPromptFn={onItemDelete}
@@ -53,6 +55,7 @@ const ItemDetailsScreen = ({ navigation }) => {
                 text='Are you sure you want to delete this item? All children items will be lost!'
             />
 
+            {/* Details Card */}
             <Card 
                 title='Details'
                 containerStyle={{margin: 0, marginBottom: 0}}
@@ -61,27 +64,38 @@ const ItemDetailsScreen = ({ navigation }) => {
                     {description || 'No Description Provided'}
                 </Text>
             </Card>
-            
-            <Card 
-                title={ <CheckBox title='Use Split Pick' checked={isSplitPick} containerStyle={{backgroundColor: 'transparent', borderColor: 'transparent'}} onPress={onSplitPickChange} />}
-                containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}
-            >
-            </Card>
 
-            <Card 
-                title={ 
+            {/* Item Order */}
+            <Card containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}>
+                <View style={{
+                     paddingHorizontal: 10,
+                     flexDirection: "row",
+                     justifyContent: "space-between",
+                     alignItems: "center"
+                }}>
+                    <Text style={{flex: .5, textAlign: "center"}}>Load Order</Text>
                     <Picker
                         selectedValue={order}
-                        style={{height: 50, width: 100}}
+                        style={{height: 50, flex: .5}}
                         onValueChange={onChangeItemOrder}
                     >
                         { [...Array(list.filter(i => !i.parentId).length)].map((value, i) => <Picker.Item key={i} label={`${i+1}`} value={i+1} />) }
                     </Picker>
-                }
-                containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}
-            >
+                </View>
             </Card>
     
+
+            {/* Split Selection */}
+            <Card containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}
+                title={
+                    <View>
+                        <CheckBox title='Use Split Pick' center iconRight checked={isSplitPick} containerStyle={{backgroundColor: 'transparent', borderColor: 'transparent'}} onPress={onSplitPickChange} />
+                        <Divider style={{ marginHorizontal: 15 }} />
+                    </View>
+                }
+            >
+                <GroupsList navigation={navigation} isVisible={isSplitPick} itemId={id} />
+            </Card>
 
             <Card 
                 title='Sub Items'

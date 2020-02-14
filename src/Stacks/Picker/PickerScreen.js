@@ -6,35 +6,35 @@ import { Card } from 'react-native-elements';
 
 import { useListContext } from '../../Hooks/List';
 
-const DividerPicker = ({ selection }) => {
-
-    const [groupOne, groupTwo] = selection;
-
+const DividerPicker = ({ groups }) => {
     return (
-        <View style={{flex: 1, flexDirection: 'row'}}>
-            <Card 
-                title='Group 1'
-                containerStyle={{margin: 5, marginBottom: 5, flex: 1}}
-            >
-                {
-                    groupOne.map((item, i) => <ListItem key={`G1-${i}`} title={item.name} />)
-                }
-            </Card>
-            <Card 
-                title='Group 2'
-                containerStyle={{margin: 5, marginBottom: 5, flex: 1}}
-            >
-                {
-                    groupTwo.map((item, i) => <ListItem key={`G2-${i}`} title={item.name} />)
-                }
-            </Card>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap', alignItems: "flex-start", justifyContent: "flex-start", padding: 5}}>
+            { 
+                groups.map((g, i) => {
+                    return (
+                        <Card 
+                            key={i} title={g.name}
+                            containerStyle={[{margin: 0}, (groups.length === i+1 && groups.length % 2 === 1) ? {width: '100%'} : {width: '50%'}]}
+                        >
+                            {
+                                g.selections.map((item, i) => <ListItem key={`G1-${i}`} title={item.name} />)
+                            }
+                        </Card>
+                    )
+                })
+            }
         </View>
     )
 }
 
-const getSplitSelection = list => {
-    const splitIndex = Math.ceil(list.length / 2);
-    return [list.slice(0,splitIndex), list.slice(splitIndex)];
+const getSplitSelection = (groups, list) => {
+    const splitIndex = Math.ceil(list.length / groups.length);
+
+    const groupList = groups.length ? groups : ['Default Group'];
+
+    const splitArray = groupList.map((group, i) => ({ name: group, selections: list.slice(i*splitIndex, (i+1) * splitIndex) }))
+
+    return splitArray;
 }
 
 const PickerScreen = ({ navigation }) => {
@@ -48,13 +48,13 @@ const PickerScreen = ({ navigation }) => {
     const getShuffledList = groupId => list.filter(i => i.parentId === groupId && i.enabled).sort(() => .5 - Math.random());
 
     const getNextRandomPick = group => {
-        if(group.isSplitPick) return [{ ...group, options: getShuffledList(group.id) }];
+        if(group.isSplitPick) return [{ ...group, options: getShuffledList(group.id) }]
 
         const childrenItem = getShuffledList(group.id);
         if(!childrenItem.length) return [];
 
         const child = childrenItem[0];
-        return [child, getNextRandomPick(child)];
+        return child.isSplitPick ? [{ ...child, options: getShuffledList(child.id) }] : [child, getNextRandomPick(child)];
     }
 
     const randomPicker = () => {
@@ -64,11 +64,13 @@ const PickerScreen = ({ navigation }) => {
             const children = getNextRandomPick(group).flat(Infinity);
             const selection = children[children.length-1];
 
+            console.log(children)
+
             children.length && acc.push({
                 name: group.name,
                 path: children.map(c => c.name).join(' / '),
                 splitPick: selection.isSplitPick,
-                ...(selection.isSplitPick && { options: getSplitSelection(selection.options) })
+                ...(selection.isSplitPick && { options: getSplitSelection(selection.splitPickGroups, selection.options) })
             });
 
             return acc
@@ -93,7 +95,7 @@ const PickerScreen = ({ navigation }) => {
                         return (
                             <View key={i}>
                                 <ListItem title={l.name} subtitle={l.path} bottomDivider />
-                                <DividerPicker selection={l.options} />
+                                <DividerPicker groups={l.options} />
                             </View>
                         )
 
