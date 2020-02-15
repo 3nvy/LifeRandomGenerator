@@ -1,31 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-native-elements';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { Card } from 'react-native-elements';
+import DividerPicker from './Components/DividerPicker'
 
 import { useListContext } from '../../Hooks/List';
 
-const DividerPicker = ({ groups }) => {
-    return (
-        <View style={{flexDirection: 'row', flexWrap: 'wrap', alignItems: "flex-start", justifyContent: "flex-start", padding: 5}}>
-            { 
-                groups.map((g, i) => {
-                    return (
-                        <Card 
-                            key={i} title={g.name}
-                            containerStyle={[{margin: 0}, (groups.length === i+1 && groups.length % 2 === 1) ? {width: '100%'} : {width: '50%'}]}
-                        >
-                            {
-                                g.selections.map((item, i) => <ListItem key={`G1-${i}`} title={item.name} />)
-                            }
-                        </Card>
-                    )
-                })
-            }
-        </View>
-    )
-}
+const getParentGroups = i => !i.parentId && i.enabled;
 
 const getSplitSelection = (groups, list) => {
     const splitIndex = Math.ceil(list.length / groups.length);
@@ -37,6 +18,18 @@ const getSplitSelection = (groups, list) => {
     return splitArray;
 }
 
+const getShuffledList = (contextList, groupId) => contextList.filter(i => i.parentId === groupId && i.enabled).sort(() => .5 - Math.random());
+
+const getNextRandomPick = (contextList, group) => {
+    if(group.isSplitPick) return [{ ...group, options: getShuffledList(contextList, group.id) }]
+
+    const childrenItem = getShuffledList(contextList, group.id);
+    if(!childrenItem.length) return [];
+
+    const child = childrenItem[0];
+    return child.isSplitPick ? [{ ...child, options: getShuffledList(contextList, child.id) }] : [child, getNextRandomPick(contextList, child)];
+}
+
 const PickerScreen = ({ navigation }) => {
 
     const { list } = useListContext();
@@ -45,23 +38,11 @@ const PickerScreen = ({ navigation }) => {
     // Reset story when list changes
     useEffect(() => setStory([]), [list])
 
-    const getShuffledList = groupId => list.filter(i => i.parentId === groupId && i.enabled).sort(() => .5 - Math.random());
-
-    const getNextRandomPick = group => {
-        if(group.isSplitPick) return [{ ...group, options: getShuffledList(group.id) }]
-
-        const childrenItem = getShuffledList(group.id);
-        if(!childrenItem.length) return [];
-
-        const child = childrenItem[0];
-        return child.isSplitPick ? [{ ...child, options: getShuffledList(child.id) }] : [child, getNextRandomPick(child)];
-    }
-
     const randomPicker = () => {
-        const mainGroups = list.filter(i => !i.parentId && i.enabled).sort((a, b) => a.order - b.order)
+        const mainGroups = list.filter(getParentGroups).sort((a, b) => a.order - b.order)
 
         const groups = mainGroups.reduce((acc, group) => {
-            const children = getNextRandomPick(group).flat(Infinity);
+            const children = getNextRandomPick(list, group).flat(Infinity);
             const selection = children[children.length-1];
 
             console.log(children)
@@ -81,11 +62,18 @@ const PickerScreen = ({ navigation }) => {
 
     return (
         <View>
-            <Button
-                buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, backgroundColor: '#C70039'}}
-                title='Random Pick' 
-                onPress={randomPicker}
-            />
+
+            { list.count(getParentGroups) ? 
+                <Button
+                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, backgroundColor: '#C70039'}}
+                    title='Random Pick' 
+                    onPress={randomPicker}
+                /> :
+                <View style={{height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{ fontSize: 20, fontFamily: 'sans-serif-thin' }}>No Groups Available to Randomize</Text>
+                    <Text style={{ marginTop: 10, fontSize: 15, fontFamily: 'sans-serif-thin' }}>{'- Go to the list menu and create some groups -'}</Text>
+                </View>
+            }
 
             <ScrollView>
             {

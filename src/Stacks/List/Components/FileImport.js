@@ -14,13 +14,19 @@ const FileImport = ({ isVisible, setVisible }) => {
      }, [isVisible])
 
     const loadFileList = async() => {
-        console.log('loaded files')
-        const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
+        let files;
+        try {
+            files = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}files/`);
+        }
+        catch(err){
+            await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}files/`);
+            files = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}files/`);
+        }
         setFileList(files);
     }
 
     const importFile = async(fileName) => {
-        const file = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}${fileName}`);
+        const file = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}files/${fileName}`);
 
         dispatchList({
             type: 'resetData',
@@ -33,7 +39,7 @@ const FileImport = ({ isVisible, setVisible }) => {
     }
 
     const removeFile = async(fileName) => {
-        await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${fileName}`);
+        await FileSystem.deleteAsync(`${FileSystem.documentDirectory}files/${fileName}`);
         loadFileList();
     }
 

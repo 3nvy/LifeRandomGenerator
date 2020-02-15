@@ -16,12 +16,15 @@ const FileExport = ({ isVisible, setVisible }) => {
 
     const onFileExport = async() => {
 
-        const [err] = await to(FileSystem.writeAsStringAsync(`${FileSystem.documentDirectory}${fileName}.txt`, JSON.stringify({ list })))
+        let [err] = await to(FileSystem.writeAsStringAsync(`${FileSystem.documentDirectory}files/${fileName}.txt`, JSON.stringify({ list })))
+
+        if(err){
+            await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}files/`);
+            await FileSystem.writeAsStringAsync(`${FileSystem.documentDirectory}files/${fileName}.txt`, JSON.stringify({ list }))
+        }
 
         setVisible(false);
-
-        err ? ToastAndroid.show('Failed to export file!', ToastAndroid.LONG)
-        : ToastAndroid.show('File exported successfully!', ToastAndroid.LONG);
+        ToastAndroid.show('File exported successfully!', ToastAndroid.LONG)
     }
 
     return (

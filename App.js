@@ -1,3 +1,5 @@
+import './PrototypeExtensions';
+
 import React, { useEffect } from 'react';
 import TabNavigation from './src/TabNavigation';
 import Reactotron from 'reactotron-react-native';
