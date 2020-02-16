@@ -1,4 +1,4 @@
-import './PrototypeExtensions';
+import './src/Utils/PrototypeExtensions';
 
 import React, { useEffect } from 'react';
 import TabNavigation from './src/TabNavigation';
