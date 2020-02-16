@@ -45,8 +45,6 @@ const PickerScreen = ({ navigation }) => {
             const children = getNextRandomPick(list, group).flat(Infinity);
             const selection = children[children.length-1];
 
-            console.log(children)
-
             children.length && acc.push({
                 name: group.name,
                 path: children.map(c => c.name).join(' / '),

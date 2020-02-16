@@ -31,7 +31,7 @@ ListScreen.navigationOptions = ({ navigation }) => {
     const { setImporting, setExporting } = navigation.state.params || {};
 
     return {
-        title: 'List of Events',
+        title: 'Event Groups',
         headerRight: () => (
            <View style={{flexDirection: 'row'}}>
             <Icon 

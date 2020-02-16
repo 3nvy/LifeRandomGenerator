@@ -23,7 +23,7 @@ const List = ({ navigation, filterFn, style = {}, parentId, needsChildren = fals
                         key={i}
                         title={l.name}
                         leftIcon={<CheckBox checked={l.enabled} containerStyle={{ padding: 0}} onPress={() => changeItemEnableStatus(l)} />}
-                        {...(needsChildren && !list.find(item => item.parentId === l.id) ? {subtitle: 'Needs 1 more children to be enabled'} : {})}
+                        {...(needsChildren && !list.find(item => item.parentId === l.id) ? {subtitle: 'Needs 1 event to be valid to randomize'} : {})}
                         bottomDivider chevron
                         onPress={()=> navigation.push('ItemDetails', { data: l }) }
                     />
@@ -39,7 +39,7 @@ const List = ({ navigation, filterFn, style = {}, parentId, needsChildren = fals
                 justifyContent: 'center',
                 margin: 5,
             }}>
-                <Text style={{color: '#bcbdc0', fontSize: 30}}>+</Text>
+                <Text style={{color: '#bcbdc0', fontSize: 15}}>{parentId ? '+ Add Event' : '+ Add Group'}</Text>
             </TouchableHighlight >
         </ScrollView>
     )
