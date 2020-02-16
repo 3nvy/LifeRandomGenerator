@@ -1,5 +1,5 @@
 <p style="text-align: center">
-  <img src="./assets/icon.png" alt="constate logo" width="150" />
+  <img src="./assets/icon.png" width="150" />
 </p>
 
 # Life Random Generator
@@ -11,6 +11,32 @@ Dont know what to wear? Let the app decide from a pre-selected range of your fav
 Dont know what to eat? Let the app decide from a pre-selected range of your favourite food.
 
 Your life, made easier!
+
+<br>
+
+## Screenshots
+
+<img src="./assets/Screenshots/1.jpg" width="300"/>
+<img src="./assets/Screenshots/2.jpg" width="300"/>
+<img src="./assets/Screenshots/3.jpg" width="300"/>
+<img src="./assets/Screenshots/4.jpg" width="300"/>
+<img src="./assets/Screenshots/5.jpg" width="300"/>
+<img src="./assets/Screenshots/6.jpg" width="300"/>
+
+<br>
+
+## Instal Expo-CLI
+npm:
+
+```sh
+npm install --global expo-cli
+```
+
+Yarn:
+
+```sh
+yarn install --global expo-cli
+```
 
 <br>
 
@@ -35,6 +61,8 @@ Run to your Android Emulator:
 ```sh
 yarn run android 
 ```
+
+<br>
 
 ## License
 
