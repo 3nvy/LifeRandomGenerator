@@ -1,4 +1,4 @@
-<p align="center">
+<p style="text-align: center">
   <img src="./assets/icon.png" alt="constate logo" width="150" />
 </p>
 
