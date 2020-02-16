@@ -1,37 +1,107 @@
-import to from 'await-to-js';
-import React from 'react';
-import { AsyncStorage, ScrollView } from 'react-native';
-import { Button, Card, Text } from 'react-native-elements';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View, Picker } from 'react-native';
+import { Icon , Card, Text, CheckBox, Divider } from 'react-native-elements';
 import List from './Components/List';
-import { useStore } from '../../../Store';
+import GroupsList from './Components/GroupsList';
+import Prompt from './Components/Prompt';
+import { useListContext } from '../../Hooks/List';
 
 const ItemDetailsScreen = ({ navigation }) => {
 
-    const [{ list }, dispatch] = useStore();
-    const { data: { id, name, description } } = navigation.state.params;
+    const { list, dispatchList } = useListContext();
+    const [showPrompt, setPrompt] = useState(false);
+    const { data: { id, description, isSplitPick, order } } = navigation.state.params;
 
-    const onItemDelete = async() => {
-        const newList = [...list.filter(l => l.id !== id)];
-        await to(AsyncStorage.setItem('items-list', JSON.stringify(newList)))
-        dispatch({
-            type: 'setList',
-            data: newList
+    const onItemDelete = () => {
+        dispatchList({
+            type: 'remove',
+            data: id
         })
+        setPrompt(false);
         navigation.navigate('List');
     }
 
+    const onSplitPickChange = () => {
+        dispatchList({
+            type: 'update',
+            data: { id, isSplitPick: !isSplitPick }
+        })
+        navigation.setParams({ data: {...navigation.state.params.data, isSplitPick: !isSplitPick} })
+    }
+
+    const onChangeItemOrder = newOrder => {
+        dispatchList({
+            type: 'changeOrder',
+            data: { id, currentOrder: order, newOrder }
+        })
+        navigation.setParams({ data: {...navigation.state.params.data, order: newOrder} })
+    }
+
+    const cancelPrompt = () => setPrompt(false);
+
+    useEffect(() => {
+        navigation.setParams({ setPrompt });
+    }, [])
+
     return (
         <ScrollView style={{margin: 10}}>
-            <Card title={name}>
+
+            {/* Delete Prompt */}
+            <Prompt 
+                isVisible={showPrompt}
+                acceptPromptFn={onItemDelete}
+                cancelPromptFn={cancelPrompt}
+                title='Warning!'
+                text='Are you sure you want to delete this item? All children items will be lost!'
+            />
+
+            {/* Details Card */}
+            <Card 
+                title='Details'
+                containerStyle={{margin: 0, marginBottom: 0}}
+            >
                 <Text style={{marginBottom: 10}}>
-                    {description}
+                    {description || 'No Description Provided'}
                 </Text>
-                <Button
-                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, backgroundColor: '#C70039'}}
-                    title='Delete Item' 
-                    onPress={onItemDelete}
-                />
-                <Text h4>Sub Items</Text>
+            </Card>
+
+            {/* Item Order */}
+            <Card containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}>
+                <View style={{
+                     paddingHorizontal: 10,
+                     flexDirection: "row",
+                     justifyContent: "space-between",
+                     alignItems: "center"
+                }}>
+                    <Text style={{flex: .5, textAlign: "center"}}>Load Order</Text>
+                    <Picker
+                        selectedValue={order}
+                        style={{height: 50, flex: .5}}
+                        onValueChange={onChangeItemOrder}
+                    >
+                        { [...Array(list.filter(i => !i.parentId).length)].map((value, i) => <Picker.Item key={i} label={`${i+1}`} value={i+1} />) }
+                    </Picker>
+                </View>
+            </Card>
+    
+
+            {/* Split Selection */}
+            <Card containerStyle={{margin: 0, marginBottom: 10, padding: 0, borderTopColor: 'transparent'}}
+                title={
+                    <View>
+                        <CheckBox title='Use Split Pick' center iconRight checked={isSplitPick} containerStyle={{backgroundColor: 'transparent', borderColor: 'transparent'}} onPress={onSplitPickChange} />
+                        <Divider style={{ marginHorizontal: 15 }} />
+                    </View>
+                }
+            >
+                <GroupsList navigation={navigation} isVisible={isSplitPick} itemId={id} />
+            </Card>
+
+            <Card 
+                title='Sub Items'
+                containerStyle={{margin: 0}}
+                dividerStyle={{marginBottom: 0}}
+            >
                 <List 
                     navigation={navigation}
                     filterFn={i => i.parentId === id}
@@ -42,8 +112,22 @@ const ItemDetailsScreen = ({ navigation }) => {
     )
 }
         
-ItemDetailsScreen.navigationOptions = {
-    title: 'Details'
-}
+ItemDetailsScreen.navigationOptions = ({ navigation }) => {
+    const { data: { name }, setPrompt } = navigation.state.params;
+
+    return {
+        title: name,
+        headerRight: () => (
+            <Icon 
+                name='delete' 
+                color='white'
+                underlayColor='#C70039'
+                iconStyle={{marginRight: 10}}
+                onPress={() => setPrompt(true)}
+            />
+        )
+      }
+};
+
         
 export default ItemDetailsScreen;

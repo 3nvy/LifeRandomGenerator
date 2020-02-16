@@ -1,42 +1,57 @@
-import to from 'await-to-js';
-import React, { useEffect } from 'react';
-import { AsyncStorage } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import List from './Components/List';
-import { useStore } from '../../../Store';
+import { View } from 'react-native';
+import { Icon } from 'react-native-elements';
+import FileImport from './Components/FileImport';
+import FileExport from './Components/FileExport';
 
 const ListScreen = ({ navigation }) => {
-
-    const [{ list }, dispatch] = useStore();
+    const [isImporting, setImporting] = useState(false);
+    const [isExporting, setExporting] = useState(false);
 
     useEffect(() => {
-        (async() => {
-            // await AsyncStorage.removeItem('items-list');
-            let [err, list] = await to(AsyncStorage.getItem('items-list'));
-
-            if(list == null) await to(AsyncStorage.setItem('items-list', JSON.stringify([])));
-            try {
-                dispatch({
-                    type: 'setList',
-                    data: JSON.parse(list || '[]')
-                })
-            }
-            catch(err){
-                alert('Error getting data');
-            }
-        })()
+        navigation.setParams({ setImporting, setExporting });
     }, [])
 
     return (
-        <List 
-            navigation={navigation}
-            filterFn={(i) => i.parentId === 0}
-            parentId={0}
-        />
+        <View>
+            <FileImport isVisible={isImporting} setVisible={setImporting}/>
+            <FileExport isVisible={isExporting} setVisible={setExporting}/>
+            <List 
+                navigation={navigation}
+                filterFn={(i) => i.parentId === 0}
+                parentId={0}
+                needsChildren={true}
+            />
+        </View>
     )
 }
-        
-ListScreen.navigationOptions = {
-    title: 'List of Events'
+
+ListScreen.navigationOptions = ({ navigation }) => {
+    const { setImporting, setExporting } = navigation.state.params || {};
+
+    return {
+        title: 'Event Groups',
+        headerRight: () => (
+           <View style={{flexDirection: 'row'}}>
+            <Icon 
+                name='file-download' 
+                color='white'
+                underlayColor='#C70039'
+                iconStyle={{marginLeft: 10, marginRight: 10}}
+                onPress={() => setExporting(true)}
+            />
+            <Icon 
+                name='file-upload' 
+                color='white'
+                underlayColor='#C70039'
+                iconStyle={{marginLeft: 10, marginRight: 20}}
+                onPress={() => setImporting(true)}
+            />
+           </View>
+        )
+      }
 }
+
         
 export default ListScreen;

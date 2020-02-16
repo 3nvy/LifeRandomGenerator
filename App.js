@@ -1,22 +1,45 @@
+import './src/Utils/PrototypeExtensions';
+
 import React, { useEffect } from 'react';
 import TabNavigation from './src/TabNavigation';
-import Reactotron, { asyncStorage } from 'reactotron-react-native';
-import { StateProvider } from './Store';
-import { ListInitialstate, ListReducer } from './src/Stacks/List/Context';
+import Reactotron from 'reactotron-react-native';
+import { StyleSheet, ActivityIndicator, View } from 'react-native';
+
+import { ListProvider, useListContext } from './src/Hooks/List';
+import { ProfilesProvider, useProfilesContext } from './src/Hooks/Profiles';
 
 Reactotron
 .configure({ host: '192.168.1.125' })
-.use(asyncStorage())
 .useReactNative() 
 .connect()
 
-const initialState = {
-  ...ListInitialstate
-};
-
-const mainReducer = (state, action) => ({
-  ...ListReducer(state, action)
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  horizontal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+  },
 });
+
+const Loader = () => {
+  const { profiles } = useProfilesContext();
+  const { list } = useListContext();
+
+  if(!list && !profiles)
+  return (
+    <View style={[styles.container, styles.horizontal]}>
+      <ActivityIndicator size={100} color="#C70039" />
+    </View>
+  )
+
+  return (
+    <TabNavigation />
+  )
+}
 
 const App = () => {
 
@@ -25,9 +48,11 @@ const App = () => {
   }, [])
 
   return (
-    <StateProvider initialState={initialState} reducer={mainReducer}>
-      <TabNavigation />
-    </StateProvider>
+    <ProfilesProvider>
+    <ListProvider>
+      <Loader />
+    </ListProvider>
+    </ProfilesProvider>
   )
 }
     
