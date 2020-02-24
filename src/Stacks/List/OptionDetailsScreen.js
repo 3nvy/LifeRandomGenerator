@@ -18,7 +18,7 @@ const ItemDetailsScreen = ({ navigation }) => {
             data: id
         })
         setPrompt(false);
-        navigation.navigate('List');
+        navigation.goBack();
     }
 
     const onSplitPickChange = () => {
@@ -52,7 +52,7 @@ const ItemDetailsScreen = ({ navigation }) => {
                 acceptPromptFn={onItemDelete}
                 cancelPromptFn={cancelPrompt}
                 title='Warning!'
-                text='Are you sure you want to delete this item? All children items will be lost!'
+                text='Are you sure you want to delete this item? All events will be lost!'
             />
 
             {/* Details Card */}
@@ -98,7 +98,7 @@ const ItemDetailsScreen = ({ navigation }) => {
             </Card>
 
             <Card 
-                title='Sub Items'
+                title='Events'
                 containerStyle={{margin: 0}}
                 dividerStyle={{marginBottom: 0}}
             >
@@ -119,7 +119,7 @@ ItemDetailsScreen.navigationOptions = ({ navigation }) => {
         title: name,
         headerRight: () => (
             <Icon 
-                name='delete' 
+                name='close' 
                 color='white'
                 underlayColor='#C70039'
                 iconStyle={{marginRight: 10}}

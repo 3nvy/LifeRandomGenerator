@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Prompt from './Components/Prompt';
-import { useListContext } from '../../Hooks/List';
+import { useProfilesContext } from '../../Hooks/Profiles';
 
 const capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1); 
 
@@ -45,12 +45,12 @@ const WrappeInput = ({ label, placeholder, pkey, value, setFn, multiline = false
     </View>
 )
 
-const AddListItemScreen = ({ navigation }) => {
+const AddProfileScreen = ({ navigation }) => {
 
-    const { dispatchList } = useListContext();
-    const { parentId, showPrompt = false } = navigation.state.params;
+    const { dispatchProfiles } = useProfilesContext();
+    const { showPrompt = false } = navigation.state.params;
 
-    const [{ name, description }, setForm] = useState({ name: '', description: '' });
+    const [{ name }, setForm] = useState({ name: '' });
     const [submiting, setSubmiting] = useState(false);
     const [{ nameError }, setErrors] = useState({ nameError: '' });
     const [isFormValid, setFormValid] = useState(false);
@@ -58,9 +58,9 @@ const AddListItemScreen = ({ navigation }) => {
     const submitItem = async() => {
         setSubmiting(true);
         navigation.setParams({ canNavigateAway: true });
-        dispatchList({
+        dispatchProfiles({
             type: 'add',
-            data: { parentId, name, description, enabled: true }
+            data: name
         })
         navigation.goBack();
     }
@@ -89,18 +89,16 @@ const AddListItemScreen = ({ navigation }) => {
                 text='Are you sure you want to navigate away? All changes will be lost if you do.'
             />
 
-            <WrappeInput label="Name *" placeholder="Input Name" pkey='name' value={name} setFn={setForm} errorMsg={nameError} setErrorsFn={setErrors} />
+            <WrappeInput label="Name *" placeholder="Profile Name" pkey='name' value={name} setFn={setForm} errorMsg={nameError} setErrorsFn={setErrors} />
 
-            <WrappeInput label="Description" placeholder="Set some description ..." pkey='description' value={description} setFn={setForm} multiline={true} />
-
-            <Button title="Submit Item" buttonStyle={{height: 50}} onPress={submitItem} loading={submiting} disabled={!isFormValid || submiting}/>
+            <Button title="Submit Profile" buttonStyle={{height: 50}} onPress={submitItem} loading={submiting} disabled={!isFormValid || submiting}/>
 
         </ScrollView>
     )
 }
         
-AddListItemScreen.navigationOptions = {
-    title: 'Add New Event'
+AddProfileScreen.navigationOptions = {
+    title: 'Add New Profile'
 }
         
-export default AddListItemScreen;
+export default AddProfileScreen;

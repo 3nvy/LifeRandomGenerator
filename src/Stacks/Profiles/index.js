@@ -1,17 +1,21 @@
 
 import React from 'react';
 import { createStackNavigator } from 'react-navigation-stack';
-import ListScreen from './ListScreen';
-import AddListItemScreen from './AddListItemScreen';
-import ItemDetailsScreen from './ItemDetailsScreen';
+import ProfilesScreen from './ProfilesScreen';
+import AddProfileScreen from './AddProfileScreen';
+import ProfileDetailsScreen from '../List/ProfileDetailsScreen';
+import AddOptionScreen from '../List/AddOptionScreen';
+import OptionDetailsScreen from '../List/OptionDetailsScreen';
 
 const RootStack = createStackNavigator({
-    List: ListScreen,
-    AddListItem: AddListItemScreen,
-    ItemDetails: ItemDetailsScreen
+    Profiles: ProfilesScreen,
+    AddProfile: AddProfileScreen,
+    ProfileDetails: ProfileDetailsScreen,
+    AddOption: AddOptionScreen,
+    OptionDetails: OptionDetailsScreen
 },
 {
-    initialRouteName: 'List',
+    initialRouteName: 'Profiles',
     defaultNavigationOptions: {
         headerStyle: {
             backgroundColor: '#C70039',
