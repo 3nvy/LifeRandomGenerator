@@ -38,7 +38,7 @@ const List = ({ navigation, filterFn, parentId, isProfileGroup }) => {
                 justifyContent: 'center',
                 margin: 5,
             }}>
-                <Text style={{color: '#bcbdc0', fontSize: 15}}>{isProfileGroup ? '+ Add Profile Group' : '+ Add Event'}</Text>
+                <Text style={{color: '#bcbdc0', fontSize: 15}}>{isProfileGroup ? '+ Add Profile Group' : '+ Add Option'}</Text>
             </TouchableHighlight >
         </ScrollView>
     )

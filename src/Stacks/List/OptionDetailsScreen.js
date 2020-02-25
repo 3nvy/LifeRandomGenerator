@@ -52,7 +52,7 @@ const ItemDetailsScreen = ({ navigation }) => {
                 acceptPromptFn={onItemDelete}
                 cancelPromptFn={cancelPrompt}
                 title='Warning!'
-                text='Are you sure you want to delete this item? All events will be lost!'
+                text='Are you sure you want to delete this option? All nested options will be lost!'
             />
 
             {/* Details Card */}
@@ -98,7 +98,7 @@ const ItemDetailsScreen = ({ navigation }) => {
             </Card>
 
             <Card 
-                title='Events'
+                title='Options'
                 containerStyle={{margin: 0}}
                 dividerStyle={{marginBottom: 0}}
             >
