@@ -16,7 +16,7 @@ Your life, made easier!
 
 # Features
 
-* **Multiple Porfiles:** Create multiple profiles for randomization, so you can categorize your random rolls by Food, Clothing, Exercices, you name it
+* **Multiple Profiles:** Create multiple profiles for randomization, so you can categorize your random rolls by Food, Clothing, Exercices, you name it
 
 * **Nested Option:** Create options within options for more customizable randomization
 
