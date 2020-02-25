@@ -14,6 +14,16 @@ Your life, made easier!
 
 <br>
 
+# Features
+
+* **Multiple Profiles:** Create multiple profiles for randomization, so you can categorize your random rolls by Food, Clothing, Exercices, you name it
+
+* **Nested Option:** Create options within options for more customizable randomization
+
+* **Split Pick:** Randomize all available options into multiple pre-selected groups
+
+<br>
+
 ## Screenshots
 
 <img src="./assets/Screenshots/1.jpg" width="294"/>

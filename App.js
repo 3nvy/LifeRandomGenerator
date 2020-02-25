@@ -29,7 +29,7 @@ const Loader = () => {
   const { profiles } = useProfilesContext();
   const { list } = useListContext();
 
-  if(!list && !profiles)
+  if(!list || !profiles)
   return (
     <View style={[styles.container, styles.horizontal]}>
       <ActivityIndicator size={100} color="#C70039" />

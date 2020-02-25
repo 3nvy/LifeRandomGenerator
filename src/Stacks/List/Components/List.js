@@ -3,7 +3,7 @@ import { ScrollView , Text, TouchableHighlight } from 'react-native';
 import { ListItem, CheckBox } from 'react-native-elements';
 import { useListContext } from '../../../Hooks/List';
 
-const List = ({ navigation, filterFn, style = {}, parentId, needsChildren = false }) => {
+const List = ({ navigation, filterFn, parentId, isProfileGroup }) => {
 
     const {list, dispatchList} = useListContext();
 
@@ -16,20 +16,19 @@ const List = ({ navigation, filterFn, style = {}, parentId, needsChildren = fals
     }
 
     return (
-        <ScrollView style={style}>
+        <ScrollView>
             {
                 list.filter(filterFn).sort((a, b) => a.order - b.order).map((l, i) => (
                     <ListItem
                         key={i}
                         title={l.name}
                         leftIcon={<CheckBox checked={l.enabled} containerStyle={{ padding: 0}} onPress={() => changeItemEnableStatus(l)} />}
-                        {...(needsChildren && !list.find(item => item.parentId === l.id) ? {subtitle: 'Needs 1 event to be valid to randomize'} : {})}
                         bottomDivider chevron
-                        onPress={()=> navigation.push('ItemDetails', { data: l }) }
+                        onPress={()=> navigation.push('OptionDetails', { data: l }) }
                     />
                 ))
             }
-            <TouchableHighlight onPress={() => navigation.navigate('AddListItem', { parentId })} underlayColor='#d6d7da' style={{
+            <TouchableHighlight onPress={() => navigation.navigate('AddOption', { isProfileGroup, parentId })} underlayColor='#d6d7da' style={{
                 height: 60,
                 borderRadius: 4,
                 borderWidth: 2,
@@ -39,7 +38,7 @@ const List = ({ navigation, filterFn, style = {}, parentId, needsChildren = fals
                 justifyContent: 'center',
                 margin: 5,
             }}>
-                <Text style={{color: '#bcbdc0', fontSize: 15}}>{parentId ? '+ Add Event' : '+ Add Group'}</Text>
+                <Text style={{color: '#bcbdc0', fontSize: 15}}>{isProfileGroup ? '+ Add Profile Group' : '+ Add Option'}</Text>
             </TouchableHighlight >
         </ScrollView>
     )
