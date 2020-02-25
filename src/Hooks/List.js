@@ -3,6 +3,8 @@ import to from 'await-to-js';
 import constate from "constate";
 import { AsyncStorage } from 'react-native';
 
+import { useProfilesContext } from './Profiles';
+
 const findChildrenItems = (list, id) => {
     const items = list.filter(i => i.parentId === id).map(i => i.id);
     return ([list].length === 0) ? [id] : [id, ...items.map(i => findChildrenItems(list, i))].flat();
@@ -102,6 +104,8 @@ const reducer = (state, action) => {
 const initialState = false;
 
 const useList = () => {
+
+    const { profiles } = useProfilesContext();
     const [list, dispatchList] = useReducer(reducer, initialState);
     
     // Load initial data
@@ -118,7 +122,26 @@ const useList = () => {
 
         })();
     }, [])
-    
+
+    useEffect(() => {
+        // Noop operation when profiles store is still loading
+        if(!profiles) return () => {};
+
+        const avaiableProfileIds = profiles && profiles.map(p => p.id) ;
+        const groupIdsToRemove = list.reduce((acc, opt) => {
+            if(opt.profileId && !avaiableProfileIds.includes(opt.profileId)) acc.push(findChildrenItems(list, opt.id))
+            return acc;
+        } , []).flat(Infinity)
+
+
+        // Remove every option related to the removed profiles
+        list && dispatchList({
+            type: 'resetData',
+            data: { list: list.filter(opt => !groupIdsToRemove.includes(opt.id)) }
+        })
+
+    }, [profiles])
+
     return { list, dispatchList };
 }
 
