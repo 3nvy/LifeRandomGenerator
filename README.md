@@ -80,4 +80,4 @@ yarn run android
 
 ## License
 
-MIT © [Renato Pestana](https://gitlab.com/3nvy/)
+MIT © [Renato Pestana](https://github.com/3nvy)
