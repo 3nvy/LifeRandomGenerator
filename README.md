@@ -26,12 +26,16 @@ Your life, made easier!
 
 ## Screenshots
 
-<img src="./assets/Screenshots/1.jpg" width="294"/>
-<img src="./assets/Screenshots/2.jpg" width="294"/>
-<img src="./assets/Screenshots/3.jpg" width="294"/>
-<img src="./assets/Screenshots/4.jpg" width="294"/>
-<img src="./assets/Screenshots/5.jpg" width="294"/>
-<img src="./assets/Screenshots/6.jpg" width="294"/>
+<p float="left">
+  <img src="./assets/Screenshots/1.jpg" width="294"/>
+  <img src="./assets/Screenshots/2.jpg" width="294"/>
+  <img src="./assets/Screenshots/3.jpg" width="294"/>
+</p>
+<p float="left">
+  <img src="./assets/Screenshots/4.jpg" width="294"/>
+  <img src="./assets/Screenshots/5.jpg" width="294"/>
+  <img src="./assets/Screenshots/6.jpg" width="294"/>
+</p>
 
 <br>
 
